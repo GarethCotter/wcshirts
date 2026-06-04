@@ -1744,6 +1744,8 @@
       return {
         submittedAt: new Date().toISOString(),
         customerName: customerName.value.trim(),
+        extraNotes: extraNotes.value.trim(),
+        pageUrl: window.location.href,
         paymentStatus: paymentStatusValue,
         paymentReference: paymentRef.textContent,
         total: formatter.format(total),
