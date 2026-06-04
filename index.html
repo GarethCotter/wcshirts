@@ -103,6 +103,96 @@
 
     .hero-copy, .poster-card { position: relative; z-index: 1; }
 
+
+    .countdown-strip {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 16px clamp(16px, 4vw, 34px);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,0)),
+        var(--yellow);
+      border-bottom: 5px solid var(--ink);
+      text-align: center;
+    }
+
+    .countdown-copy {
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      line-height: 1.25;
+    }
+
+    .countdown-copy strong {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+      color: var(--red);
+      text-shadow: 2px 2px 0 rgba(255,255,255,.55);
+      letter-spacing: -.03em;
+    }
+
+    .flip-calendar {
+      width: 118px;
+      border: 5px solid var(--ink);
+      background: var(--paper-2);
+      box-shadow: 8px 8px 0 rgba(0,0,0,.22);
+      transform: rotate(-1.5deg);
+      overflow: hidden;
+    }
+
+    .flip-calendar-top {
+      background: var(--red);
+      color: #fff;
+      font-weight: 900;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 6px 8px;
+      border-bottom: 4px solid var(--ink);
+    }
+
+    .flip-calendar-number {
+      position: relative;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 4rem;
+      line-height: .95;
+      font-weight: 900;
+      color: var(--ink);
+      padding: 8px 8px 4px;
+      background:
+        linear-gradient(180deg, #fffdf2 0 48%, #efe0b5 49% 52%, #fff7da 53% 100%);
+      text-shadow: 2px 2px 0 rgba(255,191,40,.7);
+    }
+
+    .flip-calendar-number::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      border-top: 3px solid rgba(23,35,58,.45);
+    }
+
+    .flip-calendar-label {
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: .82rem;
+      padding: 0 8px 9px;
+      background: #fff7da;
+    }
+
+    .slow-boat-note {
+      flex-basis: 100%;
+      font-size: .92rem;
+      font-weight: 800;
+      opacity: .9;
+    }
+
     .hero-top {
       display: flex;
       align-items: center;
@@ -800,6 +890,32 @@
       letter-spacing: -.04em;
     }
 
+
+    .extra-notes-box {
+      margin-top: 16px;
+      padding: 14px;
+      border: 4px solid var(--ink);
+      background: var(--paper-2);
+      box-shadow: 5px 5px 0 rgba(0,0,0,.14);
+    }
+
+    .extra-notes-box textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border: 3px solid var(--ink);
+      background: #fffdf2;
+      color: var(--ink);
+      font: inherit;
+      padding: 11px 12px;
+      border-radius: 0;
+      box-shadow: inset 3px 3px 0 rgba(0,0,0,.08);
+    }
+
+    .extra-notes-box textarea:focus {
+      outline: 4px solid rgba(255,191,40,.65);
+    }
+
     .customer-box {
       margin-bottom: 16px;
       padding: 14px;
@@ -1022,6 +1138,8 @@
         box-shadow: 6px 6px 0 rgba(0,0,0,.17);
       }
       .hero-top { align-items: flex-start; }
+      .flip-calendar { width: 104px; }
+      .flip-calendar-number { font-size: 3.35rem; }
       .kit-pair { grid-template-columns: 1fr; }
       .kit-image-frame { height: 170px; }
     }
@@ -1030,6 +1148,19 @@
 <body>
   <div class="site-shell">
     <div class="top-ribbon">World Cup 2026 shirt specials • limited run • order now</div>
+
+    <section class="countdown-strip" aria-label="Slow boat countdown">
+      <div class="flip-calendar" aria-hidden="true">
+        <div class="flip-calendar-top">Slow boat</div>
+        <div class="flip-calendar-number" id="boatCountdownDays">10</div>
+        <div class="flip-calendar-label">days</div>
+      </div>
+      <div class="countdown-copy">
+        <strong>Slow boat leaves China soon</strong>
+        Order before the cargo sets sail on <span id="boatLeaveDate">14 June 2026</span>.
+      </div>
+      <div class="slow-boat-note" id="boatCountdownNote">10 days left before the slow boat leaves China.</div>
+    </section>
 
     <header>
       <div class="hero-copy">
@@ -1252,6 +1383,12 @@
             <div class="field-alert" id="nameAlert">Please enter your name before heading to payment.</div>
           </div>
 
+          <div class="extra-notes-box">
+            <label for="extraNotes">Add extra notes to order</label>
+            <textarea id="extraNotes" placeholder="Interested in any Premiership shirts for next season, other club shirts, or anything else? Mention it here and Gareth will deal with it separately."></textarea>
+            <p class="helper" style="margin-top:8px;">Optional — this is separate from the World Cup shirt order.</p>
+          </div>
+
           <div id="basketList" class="basket-list">
             <div class="empty">No shirts in the basket yet.</div>
           </div>
@@ -1336,6 +1473,7 @@
     const customerBox = document.getElementById("customerBox");
     const nameAlert = document.getElementById("nameAlert");
     const customerDisplay = document.getElementById("customerDisplay");
+    const extraNotes = document.getElementById("extraNotes");
     const toast = document.getElementById("toast");
     const formHelper = document.getElementById("formHelper");
     const selectedStrip = document.getElementById("selectedStrip");
@@ -1558,6 +1696,7 @@
       finalSummary.innerHTML = `
         <div class="basket-item" style="margin-bottom:10px;">
           <div class="basket-item-top"><div>Customer</div><div>${escapeHtml(customerName.value.trim())}</div></div>
+          ${extraNotes.value.trim() ? `<div class="basket-meta" style="margin-top:8px;"><strong>Extra notes:</strong><br>${escapeHtml(extraNotes.value.trim())}</div>` : ""}
         </div>
         <div class="basket-list">
           ${basket.map(item => `
@@ -1580,6 +1719,7 @@
         "World Cup shirt order request",
         "",
         `Customer name: ${customerName.value.trim()}`,
+        extraNotes.value.trim() ? `Extra notes: ${extraNotes.value.trim()}` : "",
         "",
         ...basket.map((item, index) => [
           `${index + 1}. ${item.qty} × ${item.label}`,
@@ -1892,6 +2032,31 @@
       return escapeHtml(value).replaceAll("`", "&#096;");
     }
 
+
+    function updateBoatCountdown() {
+      const target = new Date("2026-06-14T00:00:00");
+      const now = new Date();
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diff = Math.ceil((target - now) / msPerDay);
+      const days = Math.max(0, diff);
+
+      const dayEl = document.getElementById("boatCountdownDays");
+      const noteEl = document.getElementById("boatCountdownNote");
+
+      if (!dayEl || !noteEl) return;
+
+      dayEl.textContent = days;
+
+      if (days > 1) {
+        noteEl.textContent = `${days} days left before the slow boat leaves China.`;
+      } else if (days === 1) {
+        noteEl.textContent = "Last day before the slow boat leaves China.";
+      } else {
+        noteEl.textContent = "The slow boat date has arrived. Gareth will keep you updated on delivery.";
+      }
+    }
+
+    updateBoatCountdown();
     populateCountries();
     populateGalleryCountrySelect();
     renderGallery();
